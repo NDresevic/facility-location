@@ -1,0 +1,58 @@
+Geometrijski algoritmi - FACILITY LOCATION
+
+Problem: Napisati program koji, za dati set tačaka u ravni i broj r, izračunava mesto gde bi disk
+		poluprečnika r trebalo postaviti kako bi broj tačaka koje pokriva disk bio maksimalan.
+
+Rešenje: Ukoliko oko svake date tačke opišemo krug poluprečnika r, mesto gde se najveći broj krugova
+		seče predstavlja mesto na koje treba postaviti traženi krug (disk), kako bi što više tačaka 
+		pripadalo krugu.
+		Prvi korak implementacije algoritma predstavlja prolazak kroz svaku tačku, gde se oko trenutne
+		tačke opiše krug poluprečnika r. Zatim se za taj izabrani krug proverava da li postoji presek
+		sa svakim od ostalih krugova. Ukoliko presek postoji, izračunavaju se presečne tačke dva kruga,
+		tj. ugao pod kojim se one nalaze u odnosu na centar glavnog kruga. Od svakog preseka se pravi interval 
+		i dodaje u listu intervala za glavni krug. Kada se provere svi krugovi, odnosno naprave svi mogući intervali, 
+		pronalazi se maksimalan broj intervala koji se seku na glavnom krugu i pamti mesto preseka. Za glavni krug 
+		tako zapamtimo mesto gde ga najviše krugova preseca i koliko. Kada tako za svaki krug odredimo potencijalno 
+		mesto postavljanja diska, onaj krug koji ima najveći broj preseka krugova će imati pravo mesto gde treba postaviti disk.
+		Složenost prolaska kroz svaku tačku, tj. krug je O(n), gde je n broj ulaznih tačaka, zatim upoređivanje 
+		preseka sa svim ostalim je O(n) (pa je to O(n^2)). Nakon toga sledi sortiranje intervala, koje je u 
+		najgorem slučaju O(n*log(n)) i provera preseka intervala u linearnoj složenosti, O(n) (pa je to
+		O(n*(n + n*log(n) + n)). To daje ukupnu složenost algoritma O(n^2*log(n)).
+		U fajlu main.js implementacija algoritma.
+		
+Pseudo:
+
+Point facilityLocation(Point[] inputSetOfPoints, Number r)
+	intervals = []
+	solution = {}
+	for fixedPoint in inputSetOfPoints
+		fixedCircle = circleAroundPoint(fixedPoint, r)
+		for point in inputSetOfPoints
+			circle = circleAroundPoint(point, r)
+			if fixedCircle and circle have intersection
+				A, B = intersection(fixedCircle, circle)
+				newInterval = makeInterval(A, B)
+				intervals.add(newInterval)
+			end if
+		end for 
+		intervals.sort()
+		count, potentialCenter = intervals.findMaxOverlap()
+		solution.add(fixedCircle, count, potentialCenter)
+		intervals.empty()
+	end for
+	for sol in solution
+		if sol[count] > maxCount then 
+			maxCount = sol[count]
+			diskCenter = sol[potentialCenter]
+		end if
+	end for
+	return diskCenter
+
+Animacija: - Unos se može učitati iz fajla, gde se u prvoj liniji nalaze dva broja n i r odvojena razmakom, 
+			gde n predstavlja broj tačaka, a r poluprečnik traženog diska. Zatim se u narednih n linija nalaze
+			dva broja takođe odvojena razmakom, koja predstavljaju x i y koordinate tačaka. 
+			Primer fajla je in.txt.
+		   - Tačke se takođe mogu dodati klikom miša na poziciju u okviru ekrana za prikaz animacije, isključivo pre 
+			samog početka animacije(obavezan klik na dugme Add points pre početka dodavanja, zatim na Finish adding 
+			nakon dodatih željenih tačaka).
+		   - Pored smih tačaka, postoje polja u koja se može uneti broj tačaka, poluprečnik diska i brzina animacije.
